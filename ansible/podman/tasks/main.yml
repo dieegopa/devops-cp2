@@ -1,0 +1,57 @@
+- name: Actualizar la lista de paquetes
+  ansible.builtin.apt:
+      update_cache: true
+
+- name: Instalar Podman
+  ansible.builtin.apt:
+      name: podman
+      state: present
+
+- name: Configurar registries en Podman
+  ansible.builtin.copy:
+      dest: /etc/containers/registries.conf
+      content: |
+          [registries.search]
+          registries = ['docker.io', 'quay.io', 'registry.fedoraproject.org']
+      mode: "0644"
+
+- name: Clonar el repositorio desde GitHub
+  ansible.builtin.git:
+      repo: "https://github.com/dieegopa/devops-cp2-vm-ex.git"
+      dest: "./code/vm"
+      version: "master"
+      clone: true
+      update: true
+      force: true
+
+- name: Obtener la imagen de nginx que utilizaremos como base
+  containers.podman.podman_image:
+      name: nginx:latest
+
+- name: Construir imagen y pushear del servidor nginx con Podman
+  containers.podman.podman_image:
+      name: app-vm:casopractico2
+      path: "./code/vm"
+      push: true
+      username: "{{ acr_sp_appid }}"
+      password: "{{ acr_sp_password }}"
+      push_args:
+          dest: diegodevopscp2.azurecr.io/vm-app
+
+- name: Autenticar Podman en Azure Container Registry
+  containers.podman.podman_login:
+      registry: diegodevopscp2.azurecr.io
+      username: "{{ acr_sp_appid }}"
+      password: "{{ acr_sp_password }}"
+  changed_when: false
+
+- name: Crear contenedor Nginx con Podman usando containers.podman
+  containers.podman.podman_container:
+      name: webserver
+      image: diegodevopscp2.azurecr.io/vm-app/app-vm:casopractico2
+      state: started
+      restart_policy: always
+      recreate: true
+      ports:
+          - "80:80"
+          - "443:443"

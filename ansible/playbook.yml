@@ -1,0 +1,8 @@
+- name: Configurar la VM con Nginx y Podman
+  hosts: vm_azure
+  vars_files:
+      - secrets.yml
+  become: true
+  become_method: sudo
+  roles:
+      - podman

@@ -1,28 +1,28 @@
 resource "azurerm_virtual_network" "vnet" {
-  name                = "vnet-casopractico2"
+  name                = var.vnet_name
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.location
+  resource_group_name = var.resource_group_name
 }
 
 resource "azurerm_subnet" "subnet" {
-  name                 = "subnet-casopractico2"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
+  name                 = var.subnet_name
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = var.vnet_name
   address_prefixes     = ["10.0.1.0/24"]
 }
 
 resource "azurerm_public_ip" "pip" {
-  name                = "public-ip-casopractico2"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
+  name                = var.public_ip_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
   allocation_method   = "Static"
 }
 
 resource "azurerm_network_interface" "nic" {
-  name                = "nic-casopractico2"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  name                = var.nic_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
   ip_configuration {
     name                          = "ipconfig1"

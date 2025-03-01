@@ -6,3 +6,4 @@ ansible/secrets.yml
 .ansible
 .vscode
 ansible/inventory.local.*
+ansible/code

@@ -58,14 +58,14 @@ variable "aks_cluster_name" {
   default     = "aks-cluster-casopractico2"
 }
 
-variable "aks_dns_prefix" {
-  description = "Prefijo DNS del clúster de Kubernetes"
-  type        = string
-  default     = "aks-dns-casopractico2"
-}
-
 variable "aks_identity_name" {
   description = "Nombre de la identidad asignada al clúster de Kubernetes"
   type        = string
   default     = "aks-identity-casopractico2"
+}
+
+variable "acr_name" {
+  description = "Nombre del registro de imagenes"
+  type        = string
+  default     = "diegodevopscp2"
 }

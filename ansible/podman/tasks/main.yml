@@ -28,7 +28,7 @@
   containers.podman.podman_image:
       name: nginx:latest
 
-- name: Construir imagen y pushear del servidor nginx con Podman
+- name: Construir imagen del servidor nginx y pushear con Podman
   containers.podman.podman_image:
       name: app-vm:casopractico2
       path: "./code/vm"

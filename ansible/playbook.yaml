@@ -6,3 +6,11 @@
   become_method: sudo
   roles:
       - podman
+
+- name: Configurar AKS
+  hosts: local
+  vars_files:
+      - secrets.yml
+  become: false
+  roles:
+      - aks

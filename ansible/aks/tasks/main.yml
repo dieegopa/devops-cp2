@@ -1,0 +1,38 @@
+- name: Clonar el repositorio desde GitHub
+  ansible.builtin.git:
+    repo: "https://github.com/dieegopa/toDoListBackend.git"
+    dest: "./code/aks"
+    version: "main"
+    clone: true
+    update: true
+    force: true
+
+- name: Obtener php:8.2-fpm-alpine imagen con arcquitectura amd64
+  containers.podman.podman_image:
+    name: php:8.2-fpm-alpine
+    pull: true
+    arch: amd64
+
+- name: Construir imagen y pushear con Podman
+  containers.podman.podman_image:
+    name: app-aks:casopractico2
+    path: "./code/aks"
+    push: true
+    username: "{{ acr_sp_appid }}"
+    password: "{{ acr_sp_password }}"
+    push_args:
+      dest: diegodevopscp2.azurecr.io/aks-app
+    arch: amd64
+
+- name: Obtener las credenciales de aks
+  command: az aks get-credentials --resource-group rg-terraform-casopractico2 --name aks-cluster-casopractico2
+
+- name: Crea un despliegue de la aplicacion
+  kubernetes.core.k8s:
+    state: present
+    src: ../deployment.yaml
+
+- name: Crea un servicio para que la aplicación sea expuesta al exterior
+  kubernetes.core.k8s:
+    state: present
+    src: ../laravel-service.yaml

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel-api
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: laravel-api
+  template:
+    metadata:
+      labels:
+        app: laravel-api
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+        - name: laravel-api
+          image: diegodevopscp2.azurecr.io/aks-app/app-aks:casopractico2
+          imagePullPolicy: Always
+          env:
+            - name: DB_HOST
+              value: mysql
+            - name: DB_DATABASE
+              value: /var/www/html/laravel.sqlite
+            - name: DB_USERNAME
+              value: sail
+            - name: DB_PASSWORD
+              value: passwords
+            - name: DB_CONNECTION
+              value: sqlite
+            - name: DB_PORT
+              value: "3306"
+          ports:
+            - containerPort: 80
+              name: http

@@ -2,8 +2,9 @@ terraform/.terraform
 terraform/terraform.tfstate
 terraform/.terraform.lock.hcl
 terraform/terraform.tfstate.backup
-ansible/secrets.yml
+ansible/secrets.local.yaml
 .ansible
 .vscode
 ansible/inventory.local.*
 ansible/code
+ansible/aks/secrets/*.local.yaml

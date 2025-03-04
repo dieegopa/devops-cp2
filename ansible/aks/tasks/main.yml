@@ -18,6 +18,7 @@
     name: app-aks:casopractico2
     path: "./code/aks"
     push: true
+    force: true
     username: "{{ acr_sp_appid }}"
     password: "{{ acr_sp_password }}"
     push_args:
@@ -25,14 +26,39 @@
     arch: amd64
 
 - name: Obtener las credenciales de aks
-  command: az aks get-credentials --resource-group rg-terraform-casopractico2 --name aks-cluster-casopractico2
+  command: az aks get-credentials --resource-group {{ rg_name }} --name {{ aks_cluster }} --overwrite-existing
+
+- name: Obtiene los secrets para el despliegue de la mysql
+  kubernetes.core.k8s:
+    state: present
+    src: ../secrets/mysql-secrets.local.yaml
+
+- name: Obtiene los secrets para el despliegue de la aplicacion laravel
+  kubernetes.core.k8s:
+    state: present
+    src: ../secrets/laravel-secrets.local.yaml
+
+- name: Crea un despliegue de la aplicacion mysql
+  kubernetes.core.k8s:
+    state: present
+    src: ../deploy/mysql-deployment.yaml
+
+- name: Crea un despliegue del volumen persistente de la mysql
+  kubernetes.core.k8s:
+    state: present
+    src: ../deploy/mysql-pv.yaml
+
+- name: Crea un despliegue del servicio de mysql
+  kubernetes.core.k8s:
+    state: present
+    src: ../deploy/mysql-service.yaml
 
 - name: Crea un despliegue de la aplicacion
   kubernetes.core.k8s:
     state: present
-    src: ../deployment.yaml
+    src: ../deploy/deployment.yaml
 
 - name: Crea un servicio para que la aplicación sea expuesta al exterior
   kubernetes.core.k8s:
     state: present
-    src: ../laravel-service.yaml
+    src: ../deploy/laravel-service.yaml

@@ -69,3 +69,15 @@ variable "acr_name" {
   type        = string
   default     = "diegodevopscp2"
 }
+
+variable "scope_map_name" {
+  description = "Nombre del scope map"
+  type        = string
+  default     = "casopractico2-scope-map"
+}
+
+variable "token_name" {
+  description = "Nombre del token"
+  type        = string
+  default     = "casopractico2-token"
+}

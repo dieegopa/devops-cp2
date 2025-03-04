@@ -14,23 +14,22 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      initContainers:
+        - name: check-db-ready
+          image: busybox
+          command:
+            [
+              "sh",
+              "-c",
+              "until nc -z laravel-api-mysql 3306; do echo waiting for MySQL; sleep 2; done;",
+            ]
       containers:
         - name: laravel-api
           image: diegodevopscp2.azurecr.io/aks-app/app-aks:casopractico2
           imagePullPolicy: Always
-          env:
-            - name: DB_HOST
-              value: mysql
-            - name: DB_DATABASE
-              value: /var/www/html/laravel.sqlite
-            - name: DB_USERNAME
-              value: sail
-            - name: DB_PASSWORD
-              value: passwords
-            - name: DB_CONNECTION
-              value: sqlite
-            - name: DB_PORT
-              value: "3306"
+          envFrom:
+            - secretRef:
+                name: laravel-api-secret
           ports:
             - containerPort: 80
               name: http

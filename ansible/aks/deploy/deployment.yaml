@@ -25,11 +25,11 @@ spec:
             ]
       containers:
         - name: laravel-api
-          image: diegodevopscp2.azurecr.io/aks-app/app-aks:casopractico2
+          image: diegodevopscp2.azurecr.io/aks-app/app-aks:casopractico2 # Obtenemos la imagen que hemos creado
           imagePullPolicy: Always
           envFrom:
             - secretRef:
-                name: laravel-api-secret
+                name: laravel-api-secret # Utilizamos los secrets previamente creados
           ports:
             - containerPort: 80
               name: http

@@ -1,3 +1,13 @@
+/*
+  Creación de una máquina virtual Linux en Azure
+  con una interfaz de red y un disco de sistema operativo.
+
+  Se establece como version de la imagen la última versión de Ubuntu 24.04 LTS.
+
+  Se establece un tamaño de máquina virtual Standard_B1s.
+
+  Se establece un usuario administrador y se le asigna una clave pública SSH.
+*/
 resource "azurerm_linux_virtual_machine" "vm" {
   name                  = var.vm_name
   resource_group_name   = azurerm_resource_group.rg.name

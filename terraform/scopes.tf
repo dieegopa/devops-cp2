@@ -1,3 +1,4 @@
+# Creamos un scope map para el ACR y los roles de lectura y escritura
 resource "azurerm_container_registry_scope_map" "rsm" {
   name                    = var.scope_map_name
   container_registry_name = azurerm_container_registry.acr.name

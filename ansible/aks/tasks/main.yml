@@ -1,3 +1,4 @@
+# Clonamos la aplicacion desde GitHub
 - name: Clonar el repositorio desde GitHub
   ansible.builtin.git:
     repo: "https://github.com/dieegopa/toDoListBackend.git"
@@ -7,12 +8,15 @@
     update: true
     force: true
 
+# Ya que trabajaremos en local, obtenemos la imagen con la arquitectura de la maquina del aks (amd64)
+# Mi local es un macbook con arquitectura arm64, por lo que necesito obtener la imagen con la arquitectura amd64
 - name: Obtener php:8.2-fpm-alpine imagen con arcquitectura amd64
   containers.podman.podman_image:
     name: php:8.2-fpm-alpine
     pull: true
     arch: amd64
 
+# Construimos la imagen de la aplicacion y la pusheamos a nuestro registro de imagenes en Azure
 - name: Construir imagen y pushear con Podman
   containers.podman.podman_image:
     name: app-aks:casopractico2
@@ -25,39 +29,49 @@
       dest: diegodevopscp2.azurecr.io/aks-app
     arch: amd64
 
+# Obtenemos las credenciales del aks para poder tener el contexto del cluster y ejecutar los siguientes comandos
 - name: Obtener las credenciales de aks
-  command: az aks get-credentials --resource-group {{ rg_name }} --name {{ aks_cluster }} --overwrite-existing
+  ansible.builtin.command:
+    cmd: az aks get-credentials --resource-group {{ rg_name }} --name {{ aks_cluster }} --overwrite-existing
+    creates: ~/.kube/config
 
+# Obtenemos los secrets para el despliegue de la mysql
 - name: Obtiene los secrets para el despliegue de la mysql
   kubernetes.core.k8s:
     state: present
     src: ../secrets/mysql-secrets.local.yaml
 
+# Obtenemos los secrets para el despliegue de la aplicacion laravel
 - name: Obtiene los secrets para el despliegue de la aplicacion laravel
   kubernetes.core.k8s:
     state: present
     src: ../secrets/laravel-secrets.local.yaml
 
+# Creamos un despliegue de la mysql
 - name: Crea un despliegue de la aplicacion mysql
   kubernetes.core.k8s:
     state: present
     src: ../deploy/mysql-deployment.yaml
 
+# Creamos un volumen persistente para la mysql
 - name: Crea un despliegue del volumen persistente de la mysql
   kubernetes.core.k8s:
     state: present
     src: ../deploy/mysql-pv.yaml
 
+# Creamos un servicio para la mysql para que pueda ser accedida por la aplicacion
 - name: Crea un despliegue del servicio de mysql
   kubernetes.core.k8s:
     state: present
     src: ../deploy/mysql-service.yaml
 
+# Creamos un despliegue de la aplicacion laravel
 - name: Crea un despliegue de la aplicacion
   kubernetes.core.k8s:
     state: present
     src: ../deploy/deployment.yaml
 
+# Creamos un servicio para la aplicacion laravel para que pueda ser accedida por el exterior
 - name: Crea un servicio para que la aplicación sea expuesta al exterior
   kubernetes.core.k8s:
     state: present

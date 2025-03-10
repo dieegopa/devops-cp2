@@ -1,3 +1,4 @@
+# Red virtual para la máquina virtual
 resource "azurerm_virtual_network" "vnet" {
   name                = var.vnet_name
   address_space       = ["10.0.0.0/16"]
@@ -5,6 +6,7 @@ resource "azurerm_virtual_network" "vnet" {
   resource_group_name = azurerm_resource_group.rg.name
 }
 
+# Subred para la máquina virtual
 resource "azurerm_subnet" "subnet" {
   name                 = var.subnet_name
   resource_group_name  = azurerm_resource_group.rg.name
@@ -12,6 +14,7 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
+# IP pública para la máquina virtual
 resource "azurerm_public_ip" "pip" {
   name                = var.public_ip_name
   resource_group_name = azurerm_resource_group.rg.name
@@ -19,6 +22,7 @@ resource "azurerm_public_ip" "pip" {
   allocation_method   = "Static"
 }
 
+# Interfaz de red para la máquina virtual
 resource "azurerm_network_interface" "nic" {
   name                = var.nic_name
   location            = azurerm_resource_group.rg.location

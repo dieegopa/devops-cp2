@@ -1,12 +1,15 @@
+# Primero actualizamos la lista de paquetes de la VM para asi poder instalar podman
 - name: Actualizar la lista de paquetes
   ansible.builtin.apt:
       update_cache: true
 
+# Instalmos podman
 - name: Instalar Podman
   ansible.builtin.apt:
       name: podman
       state: present
 
+# Ya que vamos a obtener imagenes, configuramos el registro de imagenes
 - name: Configurar registries en Podman
   ansible.builtin.copy:
       dest: /etc/containers/registries.conf
@@ -15,6 +18,7 @@
           registries = ['docker.io', 'quay.io', 'registry.fedoraproject.org']
       mode: "0644"
 
+# Clonamos el codigo de la aplicacion desde GitHub
 - name: Clonar el repositorio desde GitHub
   ansible.builtin.git:
       repo: "https://github.com/dieegopa/devops-cp2-vm-ex.git"
@@ -24,10 +28,12 @@
       update: true
       force: true
 
+# Obtenemos la imagen de nginx desde docker que utilizaremos como imagen para contruir nuestra imagen
 - name: Obtener la imagen de nginx que utilizaremos como base
   containers.podman.podman_image:
       name: nginx:latest
 
+# Construimos la imagen de la aplicacion y la pusheamos a nuestro registro de imagenes en Azure
 - name: Construir imagen del servidor nginx y pushear con Podman
   containers.podman.podman_image:
       name: app-vm:casopractico2
@@ -38,6 +44,7 @@
       push_args:
           dest: diegodevopscp2.azurecr.io/vm-app
 
+# Autenticamos Podman en Azure Container Registry
 - name: Autenticar Podman en Azure Container Registry
   containers.podman.podman_login:
       registry: diegodevopscp2.azurecr.io
@@ -45,6 +52,7 @@
       password: "{{ acr_sp_password }}"
   changed_when: false
 
+# Creamos un contenedor con la imagen de la aplicacion, sera un servidor nginx por lo que tenemos que abrir los puertos 80 y 443
 - name: Crear contenedor Nginx con Podman usando containers.podman
   containers.podman.podman_container:
       name: webserver

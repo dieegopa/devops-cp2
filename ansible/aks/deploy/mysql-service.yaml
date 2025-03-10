@@ -11,4 +11,4 @@ spec:
   selector:
     app: laravel-api
     tier: mysql
-  clusterIP: None
+  clusterIP: None # No necesitamos un ClusterIP para el servicio de MySQL, ya que no necesitamos acceder a él desde fuera del clúster

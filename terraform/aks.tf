@@ -1,3 +1,10 @@
+/*
+  Cluster de AKS con un nodo de sistema
+  Se establece la versión de Kubernetes 1.31.1
+  Se establece un nodo de sistema con un tamaño Standard_D2_v2
+  Se establece el plugin de red kubenet
+  Se establece el SKU del balanceador de carga estándar
+*/
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = var.aks_cluster_name
   location            = azurerm_resource_group.rg.location

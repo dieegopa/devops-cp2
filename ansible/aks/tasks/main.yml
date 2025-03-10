@@ -31,9 +31,7 @@
 
 # Obtenemos las credenciales del aks para poder tener el contexto del cluster y ejecutar los siguientes comandos
 - name: Obtener las credenciales de aks
-  ansible.builtin.command:
-    cmd: az aks get-credentials --resource-group {{ rg_name }} --name {{ aks_cluster }} --overwrite-existing
-    creates: ~/.kube/config
+  command: az aks get-credentials --resource-group {{ rg_name }} --name {{ aks_cluster }} --overwrite-existing
 
 # Obtenemos los secrets para el despliegue de la mysql
 - name: Obtiene los secrets para el despliegue de la mysql
